@@ -34,7 +34,9 @@
             <hr />
             <div class="summery__list">
               <div class="summery__list__title">Food:</div>
-              <div class="summery__list__item">1x {{ meal.strMeal }}</div>
+              <div class="summery__list__item">
+                1 x {{ currentOrder.meal.strMeal }}
+              </div>
             </div>
 
             <hr />
@@ -51,10 +53,16 @@
 
 <script>
 import Button from "@/components/atoms/ButtonComp";
+import { mapGetters, mapState } from "vuex";
 
 export default {
   components: {
     Button,
+  },
+  computed: {
+    ...mapGetters({
+      currentOrder: "getCurrentOrder",
+    }),
   },
   data: () => {
     return {
@@ -82,6 +90,8 @@ export default {
       this.generateTags(mealsObj.meals[0].strArea);
       this.generateTags(mealsObj.meals[0].strCategory);
       this.generateTags(mealsObj.meals[0].strTags);
+
+      this.$store.commit("setMeal", this.meal);
     },
     generateTags(tagsString) {
       if (tagsString) {
@@ -173,6 +183,7 @@ export default {
         margin-top: 15px;
 
         &__title {
+          font-weight: 400;
         }
 
         &__item {
