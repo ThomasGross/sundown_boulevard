@@ -8,7 +8,7 @@
           We provide the place!
         </div>
         <div class="button-wrapper">
-          <Button :text="'order'" :link="'order/meals'" />
+          <Button :text="'order'" :link="'/order/meals'" />
         </div>
       </div>
       <div class="logo-wrapper col-lg-5 col-md-5">

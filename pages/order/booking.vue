@@ -1,43 +1,82 @@
 <template>
   <div class="container">
-    <div class="drinks">
-      <h1 class="title">What do you drink?</h1>
+    <div class="booking">
+      <h1 class="title">When will you be here?</h1>
       <div class="content row">
-        <div class="drinks-selector col-md-7">
-          <div
-            class="card"
-            v-for="drink in drinks.slice(0, 10)"
-            :key="drink.id"
-          >
-            <div class="img">
-              <img :src="drink.image_url" alt="" />
+        <div class="booking-selector col-md-7">
+          <ValidationObserver class="card" tag="div" ref="observer">
+            <div class="form-row row">
+              <ValidationProvider
+                class="input-group col-6"
+                name="Date"
+                v-slot="{ errors }"
+                :rules="{ required: true }"
+              >
+                <label for="">Choose a date</label>
+                <client-only
+                  ><date-picker
+                    placeholder="DD/MM/YYYY"
+                    format="dd/MM/yyyy"
+                    v-model="booking_info.selected_date"
+                    :minimumView="'day'"
+                    :maximumView="'day'"
+                    :disabled-dates="disabledDates"
+                /></client-only>
+                <span class="error-label">{{ errors[0] }}</span>
+              </ValidationProvider>
+              <ValidationProvider
+                v-slot="{ errors }"
+                name="Time"
+                :rules="{ required: true, regex: '[0-9][0-9]:[0-9][0-9]' }"
+                class="input-group col-6"
+              >
+                <label for="">Choose the time</label>
+                <client-only>
+                  <div>
+                    <!-- <vue-timepicker format="HH:mm"></vue-timepicker> -->
+                    <vue-timepicker
+                      format="HH:mm"
+                      :minute-interval="15"
+                      :hour-range="[16, 17, 18, 19, 20, 21, 22, 23]"
+                      hide-disabled-hours
+                      :minute-range="[0, 15, 30, 45]"
+                      v-model="booking_info.selected_time"
+                    >
+                    </vue-timepicker>
+                  </div>
+                </client-only>
+                <span class="error-label">{{ errors[0] }}</span>
+              </ValidationProvider>
             </div>
-            <div class="description">
-              <div class="description__title">{{ drink.name }}</div>
-              <div class="description__tagline">{{ drink.tagline }}</div>
-              <div class="description__body">{{ drink.description }}</div>
-              <!-- <div class="description__body-label">Works well with:</div>
-              <div class="description__food_pairing">
-                {{ drink.food_pairing }}
-              </div> -->
-              <div class="description__tags">
-                <div class="tags">
-                  <div class="tags__item">Vol: {{ drink.abv }}%</div>
+            <div class="form-row row">
+              <ValidationProvider
+                class="input-group col-6"
+                :rules="{ required: true, email: true }"
+                name="Email"
+                v-slot="{ errors }"
+              >
+                <label for="">Email</label>
+                <input
+                  placeholder="example@mail.com"
+                  v-model="booking_info.email"
+                  type="text"
+                />
+                <span class="error-label">{{ errors[0] }}</span>
+              </ValidationProvider>
+            </div>
+            <div class="form-row row">
+              <div class="col-6">
+                <label for="">Amount of people</label>
+                <div class="cta-section">
+                  <button class="button-remove" v-on:click="removePerson()">
+                    -
+                  </button>
+                  <div class="amount">{{ booking_info.people }}</div>
+                  <button class="button-add" v-on:click="addPerson()">+</button>
                 </div>
               </div>
-
-              <hr />
-              <div class="cta-section">
-                <button class="button-remove" v-on:click="removeDrink(drink)">
-                  -
-                </button>
-                <div class="amount">{{ getAmount(drink.id) }}</div>
-                <button class="button-add" v-on:click="addDrink(drink)">
-                  +
-                </button>
-              </div>
             </div>
-          </div>
+          </ValidationObserver>
         </div>
 
         <div class="summery col-md-4">
@@ -60,11 +99,10 @@
                 {{ drink.amount }} x {{ drink.name }}
               </div>
             </div>
-
             <hr />
           </div>
           <div class="button-wrapper">
-            <Button :text="'next'" :link="'drinks'" />
+            <Button :text="'Order'" @buttonclick="validateForm()" />
           </div>
         </div>
       </div>
@@ -77,9 +115,15 @@
 import Button from "@/components/atoms/ButtonComp";
 import { mapGetters, mapState } from "vuex";
 
+import VueTimepicker from "vue2-timepicker";
+import "vue2-timepicker/dist/VueTimepicker.css";
+
+import { ValidationProvider, ValidationObserver } from "vee-validate";
+
 export default {
   components: {
     Button,
+    VueTimepicker,
   },
   computed: {
     ...mapGetters({
@@ -88,8 +132,16 @@ export default {
   },
   data: () => {
     return {
-      loading: false,
-      drinks: [],
+      booking_info: {
+        selected_date: "",
+        selected_time: "",
+        people: 1,
+        email: "",
+      },
+      disabledDates: {
+        to: new Date(),
+        days: [6, 0],
+      },
     };
   },
   async fetch() {
@@ -106,6 +158,19 @@ export default {
     this.drinks = drinksToReturn;
   },
   methods: {
+    validateForm() {
+      this.$refs.observer.validate().then((success) => {
+        if (!success) {
+          return;
+        }
+
+        this.$store.commit("setBookingInfo", this.booking_info);
+
+        this.$router.push({
+          path: "/order/receipt",
+        });
+      });
+    },
     getAmount(id) {
       const drink = this.currentOrder.drinks.find((x) => x.id === id);
 
@@ -117,18 +182,22 @@ export default {
         return 0;
       }
     },
-    addDrink(drink) {
-      this.$store.commit("addDrink", { ...drink });
+    addPerson() {
+      if (this.people !== 10) {
+        this.people = this.people + 1;
+      }
     },
-    removeDrink(drink) {
-      this.$store.commit("removeDrink", { ...drink });
+    removePerson() {
+      if (this.people !== 1) {
+        this.people = this.people - 1;
+      }
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.drinks {
+.booking {
   padding-top: 70px;
 
   .title {
@@ -141,101 +210,28 @@ export default {
     margin-top: 50px;
     height: 100%;
 
-    .drinks-selector {
-      .card {
-        display: flex;
-        margin-bottom: 30px;
+    .card {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 30px;
+    }
+
+    .cta-section {
+      margin-top: 15px;
+      display: flex;
+
+      .button-remove {
+        margin: 0 10px;
+        font-size: 23px;
       }
 
-      .description {
-        margin-left: 30px;
-        width: 50%;
-
-        &__tags {
-          margin-top: 15px;
-        }
-
-        &__title {
-          font-weight: 200;
-          color: $color-black;
-          font-size: 54px;
-          word-break: break-word;
-          hyphens: auto;
-        }
-
-        &__tagline {
-          margin-top: 10px;
-          font-size: 20px;
-          font-weight: 400;
-        }
-
-        &__body-label {
-          margin-top: 15px;
-          font-weight: 300;
-        }
-
-        &__body {
-          margin-top: 20px;
-          font-weight: 400;
-        }
-
-        &__abv {
-          margin-top: 10px;
-        }
-
-        &__food_pairing {
-          margin-top: 10px;
-        }
-
-        .cta-section {
-          margin-top: 15px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          .button-remove {
-            margin: 0 10px;
-            font-size: 23px;
-          }
-
-          .amount {
-            font-size: 30px;
-          }
-
-          .button-add {
-            margin: 0 10px;
-            font-size: 23px;
-          }
-        }
+      .amount {
+        font-size: 30px;
       }
 
-      .img {
-        display: flex;
-        overflow: hidden;
-        width: 50%;
-        margin: auto;
-
-        img {
-          object-fit: contain;
-          height: 100%;
-          width: 100%;
-          max-height: 300px;
-          object-position: center center;
-        }
-      }
-
-      .button-wrapper {
-        margin-top: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        div {
-          margin-right: 32px;
-          font-size: 23px;
-          color: $color-black;
-          font-family: "HelveticaNeue-CondensedBlack";
-        }
+      .button-add {
+        margin: 0 10px;
+        font-size: 23px;
       }
     }
 
@@ -266,6 +262,40 @@ export default {
           margin-top: 15px;
         }
       }
+    }
+  }
+
+  ::v-deep .vdp-datepicker__calendar {
+    .cell.selected {
+      background: $color-primary;
+      color: #ffff;
+    }
+  }
+
+  ::v-deep .vue__time-picker {
+    display: block;
+    position: relative;
+    font-size: 1rem;
+    width: 100%;
+    font-family: sans-serif;
+
+    .display-time {
+      border: 1px solid #d2d2d2;
+      width: 100%;
+      height: 40px;
+      font-size: 1rem;
+      padding: 10px;
+    }
+
+    .controls {
+      display: none;
+      height: 40px;
+    }
+
+    .dropdown ul li:not([disabled]).active,
+    .dropdown ul li:not([disabled]).active:focus,
+    .dropdown ul li:not([disabled]).active:hover {
+      background: $color-primary;
     }
   }
 }

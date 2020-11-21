@@ -4,11 +4,7 @@
       <h1 class="title">What do you drink?</h1>
       <div class="content row">
         <div class="drinks-selector col-md-7">
-          <div
-            class="card"
-            v-for="drink in drinks.slice(0, 10)"
-            :key="drink.id"
-          >
+          <div class="card" v-for="drink in drinks" :key="drink.id">
             <div class="img">
               <img :src="drink.image_url" alt="" />
             </div>
@@ -22,7 +18,7 @@
               </div> -->
               <div class="description__tags">
                 <div class="tags">
-                  <div class="tags__item">Vol: {{ drink.abv }}%</div>
+                  <div class="tags__item">abv: {{ drink.abv }}%</div>
                 </div>
               </div>
 
@@ -53,6 +49,17 @@
             <div class="summery__list">
               <div class="summery__list__title">Drinks:</div>
               <div
+                v-if="currentOrder.drinks.length === 0"
+                class="summery__list__item"
+              >
+                None
+                <template v-if="error">
+                  <span>-</span>
+                  <span class="error-label"> Please pick a drink</span>
+                </template>
+              </div>
+              <div
+                v-else
                 v-for="drink in currentOrder.drinks"
                 :key="drink.id"
                 class="summery__list__item"
@@ -64,7 +71,7 @@
             <hr />
           </div>
           <div class="button-wrapper">
-            <Button :text="'next'" :link="'booking'" />
+            <Button :text="'next'" @buttonclick="validateForm()" />
           </div>
         </div>
       </div>
@@ -90,6 +97,7 @@ export default {
     return {
       loading: false,
       drinks: [],
+      error: false,
     };
   },
   async fetch() {
@@ -106,6 +114,18 @@ export default {
     this.drinks = drinksToReturn;
   },
   methods: {
+    validateForm() {
+      if (this.currentOrder.drinks.length === 0) {
+        console.log(this.currentOrder.drinks);
+
+        this.error = true;
+        return;
+      }
+
+      this.$router.push({
+        path: "/order/booking",
+      });
+    },
     getAmount(id) {
       const drink = this.currentOrder.drinks.find((x) => x.id === id);
 

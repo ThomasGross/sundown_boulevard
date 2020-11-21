@@ -3,7 +3,12 @@ export const state = () => ({
   currentOrder: {
     meal: {},
     drinks: [],
-    booking_info: {}
+    booking_info: {
+      date: '',
+      time: '',
+      people: 1,
+      email: ''
+    }
   },
 });
 
@@ -45,7 +50,7 @@ export const mutations = {
     }
   },
   setBookingInfo(state, data) {
-    state.currentOrder.booking_info = data.booking_info;
+    state.currentOrder.booking_info = data;
   },
 }
 
