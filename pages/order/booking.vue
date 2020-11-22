@@ -33,7 +33,6 @@
                 <label for="">Choose the time</label>
                 <client-only>
                   <div>
-                    <!-- <vue-timepicker format="HH:mm"></vue-timepicker> -->
                     <vue-timepicker
                       format="HH:mm"
                       :minute-interval="15"
@@ -57,6 +56,7 @@
               >
                 <label for="">Email</label>
                 <input
+                  :class="isUserUpdatingOrder ? 'Order' : 'Update order'"
                   placeholder="example@mail.com"
                   v-model="booking_info.email"
                   type="text"
@@ -102,11 +102,14 @@
             <hr />
           </div>
           <div class="button-wrapper">
-            <Button :text="'Order'" @buttonclick="validateForm()" />
+            <Button
+              :text="isUserUpdatingOrder ? 'Update order' : 'Order'"
+              @buttonclick="validateForm()"
+            />
           </div>
         </div>
       </div>
-      <!-- <pre>{{ JSON.stringify(drinks, null, "\t") }}</pre> -->
+      <!-- <pre>{{ JSON.stringify(currentOrder.booking_info, null, "\t") }}</pre> -->
     </div>
   </div>
 </template>
@@ -114,11 +117,10 @@
 <script>
 import Button from "@/components/atoms/ButtonComp";
 import { mapGetters, mapState } from "vuex";
-
+import { ValidationProvider, ValidationObserver } from "vee-validate";
 import VueTimepicker from "vue2-timepicker";
 import "vue2-timepicker/dist/VueTimepicker.css";
-
-import { ValidationProvider, ValidationObserver } from "vee-validate";
+import cloneDeep from "lodash/cloneDeep";
 
 export default {
   components: {
@@ -127,22 +129,21 @@ export default {
   },
   computed: {
     ...mapGetters({
+      isUserUpdatingOrder: "isUserUpdating",
       currentOrder: "getCurrentOrder",
     }),
   },
   data: () => {
     return {
-      booking_info: {
-        selected_date: "",
-        selected_time: "",
-        people: 1,
-        email: "",
-      },
+      booking_info: {},
       disabledDates: {
         to: new Date(),
         days: [6, 0],
       },
     };
+  },
+  created() {
+    this.booking_info = cloneDeep(this.currentOrder.booking_info);
   },
   async fetch() {
     const drinksToReturn = [];
@@ -165,6 +166,7 @@ export default {
         }
 
         this.$store.commit("setBookingInfo", this.booking_info);
+        this.$store.commit("stateToLocalStorage", this.booking_info);
 
         this.$router.push({
           path: "/order/receipt",
@@ -183,13 +185,13 @@ export default {
       }
     },
     addPerson() {
-      if (this.people !== 10) {
-        this.people = this.people + 1;
+      if (this.booking_info.people !== 10) {
+        this.booking_info.people = this.booking_info.people + 1;
       }
     },
     removePerson() {
-      if (this.people !== 1) {
-        this.people = this.people - 1;
+      if (this.booking_info.people !== 1) {
+        this.booking_info.people = this.booking_info.people - 1;
       }
     },
   },

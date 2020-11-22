@@ -1,20 +1,31 @@
 <template>
   <div class="container">
-    <div>
-      <Hero />
+    <div class="section">
+      <HeroSection />
+    </div>
+    <div class="section">
+      <FindOrderSection />
     </div>
   </div>
 </template>
 
 <script>
-import Hero from "~/components/molecules/HeroSection";
+import HeroSection from "~/components/molecules/HeroSection";
+import FindOrderSection from "~/components/molecules/FindOrderSection";
 
 export default {
   components: {
-    Hero,
+    HeroSection,
+    FindOrderSection,
+  },
+  mounted() {
+    // this.$store.commit("initialiseStore");
   },
 };
 </script>
 
 <style scoped lang="scss">
+.section {
+  margin-bottom: 100px;
+}
 </style>

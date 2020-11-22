@@ -101,17 +101,9 @@ export default {
     };
   },
   async fetch() {
-    const drinksToReturn = [];
-
-    const drinks = await fetch("https://api.punkapi.com/v2/beers").then((res) =>
+    this.drinks = await fetch("https://api.punkapi.com/v2/beers").then((res) =>
       res.json()
     );
-
-    drinks.forEach((drink) => {
-      drinksToReturn.push({ ...drink, amount: 0 });
-    });
-
-    this.drinks = drinksToReturn;
   },
   methods: {
     validateForm() {
@@ -130,8 +122,6 @@ export default {
       const drink = this.currentOrder.drinks.find((x) => x.id === id);
 
       if (drink !== undefined) {
-        console.log(drink.amount);
-
         return drink.amount;
       } else {
         return 0;

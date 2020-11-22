@@ -1,18 +1,40 @@
-export const state = () => ({
-  orders: [],
-  currentOrder: {
-    meal: {},
-    drinks: [],
-    booking_info: {
-      date: '',
-      time: '',
-      people: 1,
-      email: ''
-    }
+const getDefaultState = () => {
+  return {
+    userUpdatingOrder: false,
+    step: 0,
+    currentOrder: {
+      meal: {},
+      drinks: [],
+      booking_info: {
+        selected_date: '',
+        selected_time: '',
+        people: 1,
+        email: ''
+      }
+    },
+  }
+}
+
+export const state = getDefaultState();
+
+export const actions = {
+  resetState({ commit }) {
+    commit('resetState');
   },
-});
+}
 
 export const mutations = {
+  stateToLocalStorage(state, data) {
+    localStorage.setItem(state.currentOrder.booking_info.email, JSON.stringify(state.currentOrder));
+    state.userUpdatingOrder = false;
+  },
+
+  localStorageToState(state, email) {
+    let order = JSON.parse(localStorage.getItem(email));
+    state.currentOrder = order;
+    state.userUpdatingOrder = true;
+  },
+
   setMeal(state, data) {
     state.currentOrder.meal = data;
   },
@@ -52,10 +74,21 @@ export const mutations = {
   setBookingInfo(state, data) {
     state.currentOrder.booking_info = data;
   },
+  resetState(state) {
+    // Merge rather than replace so we don't lose observers
+    // https://github.com/vuejs/vuex/issues/1118
+    Object.assign(state, getDefaultState())
+  }
 }
 
 export const getters = {
   getCurrentOrder(state) {
     return state.currentOrder;
   },
+  getStep(state) {
+    return state.step;
+  },
+  isUserUpdating(state) {
+    return state.userUpdatingOrder;
+  }
 }

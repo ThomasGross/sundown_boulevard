@@ -29,7 +29,11 @@
               {{ currentOrder.booking_info.people | formatPeople }}
             </div>
             <div class="summery__list__item">
-              {{ currentOrder.booking_info.selected_date | formatDate }}
+              {{
+                $moment(currentOrder.booking_info.selected_date).format(
+                  "MMMM Do YYYY"
+                )
+              }}
               -
               {{ currentOrder.booking_info.selected_time }}
             </div>
@@ -42,7 +46,6 @@
           <Button :text="'back to home'" :link="'/'" />
         </div>
       </div>
-      <!-- <pre>{{ JSON.stringify(currentOrder, null, "\t") }}</pre> -->
     </div>
   </div>
 </template>
@@ -65,8 +68,12 @@ export default {
         return date;
       }
 
-      const options = { year: "numeric", month: "long", day: "numeric" };
-      return date.toLocaleDateString(undefined, options);
+      // let sting = Date.parse(date);
+
+      // console.log(string);
+
+      // const options = { year: "numeric", month: "long", day: "numeric" };
+      // return sting.toLocaleDateString(undefined, options);
     },
   },
   components: {

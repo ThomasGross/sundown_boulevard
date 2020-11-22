@@ -6,15 +6,19 @@
         <div class="meal-selector col-md-7">
           <div class="card">
             <div class="img">
-              <img :src="meal.strMealThumb" alt="" />
+              <img :src="currentOrder.meal.strMealThumb" alt="" />
             </div>
             <div class="description">
               <div class="description__title">
-                {{ meal.strMeal }}
+                {{ currentOrder.meal.strMeal }}
               </div>
               <div class="description__tags">
                 <div class="tags">
-                  <div v-for="tag in tags" :key="tag" class="tags__item">
+                  <div
+                    v-for="(tag, index) in currentOrder.meal.tags"
+                    :key="tag + index"
+                    class="tags__item"
+                  >
                     {{ tag }}
                   </div>
                 </div>
@@ -42,11 +46,11 @@
             <hr />
           </div>
           <div class="button-wrapper">
-            <Button :text="'next'" :link="'drinks'" />
+            <Button :text="'next'" :link="'/order/drinks'" />
           </div>
         </div>
       </div>
-      <!-- <pre>{{ JSON.stringify(meal, null, "\t") }}</pre> -->
+      <!-- <pre>{{ JSON.stringify(this.currentOrder, null, "\t") }}</pre> -->
     </div>
   </div>
 </template>
@@ -62,19 +66,26 @@ export default {
   computed: {
     ...mapGetters({
       currentOrder: "getCurrentOrder",
+      isUserUpdating: "isUserUpdating",
     }),
   },
   data: () => {
     return {
       loading: false,
       meal: "",
-      tags: [],
     };
   },
   mounted() {
-    this.fetchMeal();
+    if (this.isUserUpdating) {
+      this.loadMealFormstate();
+    } else {
+      this.fetchMeal();
+    }
   },
   methods: {
+    loadMealFormstate() {
+      this.meal = this.currentOrder.meal;
+    },
     refreshMeal() {
       this.tags = [];
       this.fetchMeal();
@@ -85,21 +96,16 @@ export default {
       );
 
       const mealsObj = JSON.parse(JSON.stringify(meals));
-      this.meal = mealsObj.meals[0];
 
-      this.generateTags(mealsObj.meals[0].strArea);
-      this.generateTags(mealsObj.meals[0].strCategory);
-      this.generateTags(mealsObj.meals[0].strTags);
+      let tags = this.generateTags(mealsObj.meals[0].strArea);
+      tags = tags.concat(this.generateTags(mealsObj.meals[0].strCategory));
+      tags = tags.concat(this.generateTags(mealsObj.meals[0].strTags));
 
-      this.$store.commit("setMeal", this.meal);
+      this.$store.commit("setMeal", { ...mealsObj.meals[0], tags });
     },
     generateTags(tagsString) {
       if (tagsString) {
-        var newTags = tagsString.split(",");
-
-        newTags.forEach((tag) => {
-          this.tags.push(tag);
-        });
+        return tagsString.split(",");
       }
     },
   },

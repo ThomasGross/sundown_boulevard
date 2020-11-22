@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.12.2",
+    "@nuxtjs/moment": "^1.6.1",
     "core-js": "^3.6.5",
+    "lodash": "^4.17.20",
     "nuxt": "^2.14.6",
     "vee-validate": "3.4.3",
     "vue2-timepicker": "^1.1.5",
