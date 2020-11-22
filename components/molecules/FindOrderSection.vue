@@ -9,9 +9,8 @@
       </div>
       <div class="find-order">
         <h2>Find order</h2>
-        <div class="form-row row">
+        <ValidationObserver class="form-row row" tag="div" ref="observer">
           <ValidationProvider
-            ref="observer"
             class="input-group col-8"
             :rules="{ required: true, email: true }"
             name="Email"
@@ -21,7 +20,7 @@
             <input placeholder="example@mail.com" v-model="email" type="text" />
             <span class="error-label">{{ errors[0] }}</span>
           </ValidationProvider>
-        </div>
+        </ValidationObserver>
         <div class="button-section">
           <Button :text="'Find'" @buttonclick="validateFields" />
         </div>
@@ -57,7 +56,7 @@ export default {
 
         this.$store.commit("localStorageToState", this.email);
         this.$router.push({
-          path: "/order",
+          path: "/order/meals",
         });
       });
     },
