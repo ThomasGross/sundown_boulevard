@@ -4,10 +4,10 @@
       <HeroSection />
     </div>
     <div class="section">
-      <SliderSection />
+      <FindOrderSection />
     </div>
     <div class="section">
-      <FindOrderSection />
+      <SliderSection />
     </div>
   </div>
 </template>
