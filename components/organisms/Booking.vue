@@ -79,29 +79,9 @@
           </ValidationObserver>
         </div>
 
-        <div class="summery col-md-4">
-          <div class="card">
-            <div class="summery__title">Order</div>
-            <hr />
-            <div class="summery__list">
-              <div class="summery__list__title">Food:</div>
-              <div class="summery__list__item">
-                1x {{ currentOrder.meal.strMeal }}
-              </div>
-            </div>
-            <div class="summery__list">
-              <div class="summery__list__title">Drinks:</div>
-              <div
-                v-for="drink in currentOrder.drinks"
-                :key="drink.id"
-                class="summery__list__item"
-              >
-                {{ drink.amount }} x {{ drink.name }}
-              </div>
-            </div>
-            <hr />
-          </div>
-          <div class="button-wrapper">
+        <div class="col-md-4 sticky">
+          <Summery :currentOrder="currentOrder" :step="step" />
+          <div class="button-wrapper button-wrapper--align-right">
             <Button
               :text="isUserUpdatingOrder ? 'Update order' : 'Order'"
               @buttonclick="validateForm()"
@@ -109,13 +89,14 @@
           </div>
         </div>
       </div>
-      <!-- <pre>{{ JSON.stringify(currentOrder.booking_info, null, "\t") }}</pre> -->
     </div>
   </div>
 </template>
 
 <script>
 import Button from "@/components/atoms/ButtonComp";
+import Summery from "@/components/organisms/Summery";
+
 import { mapGetters, mapState } from "vuex";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import VueTimepicker from "vue2-timepicker";
@@ -126,11 +107,13 @@ export default {
   components: {
     Button,
     VueTimepicker,
+    Summery,
   },
   computed: {
     ...mapGetters({
       isUserUpdatingOrder: "isUserUpdating",
       currentOrder: "getCurrentOrder",
+      step: "getCurrentStep",
     }),
   },
   data: () => {
@@ -168,9 +151,7 @@ export default {
         this.$store.commit("setBookingInfo", this.booking_info);
         this.$store.commit("stateToLocalStorage", this.booking_info);
 
-        this.$router.push({
-          path: "/order/receipt",
-        });
+        this.$store.commit("incrementStep");
       });
     },
     getAmount(id) {
@@ -234,35 +215,6 @@ export default {
       .button-add {
         margin: 0 10px;
         font-size: 23px;
-      }
-    }
-
-    .summery {
-      position: sticky;
-      height: 100%;
-      top: 30px;
-
-      .button-wrapper {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 30px;
-        margin-left: auto;
-      }
-
-      &__title {
-        font-size: 32px;
-      }
-
-      &__list {
-        margin-top: 15px;
-
-        &__title {
-          font-weight: 400;
-        }
-
-        &__item {
-          margin-top: 15px;
-        }
       }
     }
   }

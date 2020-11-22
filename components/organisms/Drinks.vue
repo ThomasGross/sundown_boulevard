@@ -12,10 +12,6 @@
               <div class="description__title">{{ drink.name }}</div>
               <div class="description__tagline">{{ drink.tagline }}</div>
               <div class="description__body">{{ drink.description }}</div>
-              <!-- <div class="description__body-label">Works well with:</div>
-              <div class="description__food_pairing">
-                {{ drink.food_pairing }}
-              </div> -->
               <div class="description__tags">
                 <div class="tags">
                   <div class="tags__item">abv: {{ drink.abv }}%</div>
@@ -36,46 +32,13 @@
           </div>
         </div>
 
-        <div class="summery col-md-4">
-          <div class="card">
-            <div class="summery__title">Order</div>
-            <hr />
-            <div class="summery__list">
-              <div class="summery__list__title">Food:</div>
-              <div class="summery__list__item">
-                1x {{ currentOrder.meal.strMeal }}
-              </div>
-            </div>
-            <div class="summery__list">
-              <div class="summery__list__title">Drinks:</div>
-              <div
-                v-if="currentOrder.drinks.length === 0"
-                class="summery__list__item"
-              >
-                None
-                <template v-if="error">
-                  <span>-</span>
-                  <span class="error-label"> Please pick a drink</span>
-                </template>
-              </div>
-              <div
-                v-else
-                v-for="drink in currentOrder.drinks"
-                :key="drink.id"
-                class="summery__list__item"
-              >
-                {{ drink.amount }} x {{ drink.name }}
-              </div>
-            </div>
-
-            <hr />
-          </div>
-          <div class="button-wrapper">
+        <div class="col-md-4 sticky">
+          <Summery :currentOrder="currentOrder" :error="error" :step="step" />
+          <div class="button-wrapper button-wrapper--align-right">
             <Button :text="'next'" @buttonclick="validateForm()" />
           </div>
         </div>
       </div>
-      <!-- <pre>{{ JSON.stringify(drinks, null, "\t") }}</pre> -->
     </div>
   </div>
 </template>
@@ -91,6 +54,7 @@ export default {
   computed: {
     ...mapGetters({
       currentOrder: "getCurrentOrder",
+      step: "getCurrentStep",
     }),
   },
   data: () => {
@@ -108,15 +72,11 @@ export default {
   methods: {
     validateForm() {
       if (this.currentOrder.drinks.length === 0) {
-        console.log(this.currentOrder.drinks);
-
         this.error = true;
         return;
       }
 
-      this.$router.push({
-        path: "/order/booking",
-      });
+      this.$store.commit("incrementStep");
     },
     getAmount(id) {
       const drink = this.currentOrder.drinks.find((x) => x.id === id);

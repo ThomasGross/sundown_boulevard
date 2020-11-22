@@ -43,7 +43,7 @@
           </div>
         </div>
         <div class="button-wrapper">
-          <Button :text="'back to home'" :link="'/'" />
+          <Button :text="'back to home'" @buttonclick="buttonClick" />
         </div>
       </div>
     </div>
@@ -63,18 +63,6 @@ export default {
         return number + " person";
       }
     },
-    formatDate: function (date) {
-      if (!date) {
-        return date;
-      }
-
-      // let sting = Date.parse(date);
-
-      // console.log(string);
-
-      // const options = { year: "numeric", month: "long", day: "numeric" };
-      // return sting.toLocaleDateString(undefined, options);
-    },
   },
   components: {
     Button,
@@ -83,6 +71,15 @@ export default {
     ...mapGetters({
       currentOrder: "getCurrentOrder",
     }),
+  },
+  methods: {
+    buttonClick() {
+      this.$router.push({
+        path: "/",
+      });
+
+      this.$store.commit("resetState");
+    },
   },
 };
 </script>

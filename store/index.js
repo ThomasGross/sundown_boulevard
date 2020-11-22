@@ -30,9 +30,11 @@ export const mutations = {
   },
 
   localStorageToState(state, email) {
-    let order = JSON.parse(localStorage.getItem(email));
-    state.currentOrder = order;
-    state.userUpdatingOrder = true;
+    if (localStorage.getItem(email) !== null) {
+      let order = JSON.parse(localStorage.getItem(email));
+      state.currentOrder = order;
+      state.userUpdatingOrder = true;
+    }
   },
 
   setMeal(state, data) {
@@ -78,6 +80,9 @@ export const mutations = {
     // Merge rather than replace so we don't lose observers
     // https://github.com/vuejs/vuex/issues/1118
     Object.assign(state, getDefaultState())
+  },
+  incrementStep(state) {
+    state.step++;
   }
 }
 
@@ -85,10 +90,10 @@ export const getters = {
   getCurrentOrder(state) {
     return state.currentOrder;
   },
-  getStep(state) {
+  getCurrentStep(state) {
     return state.step;
   },
   isUserUpdating(state) {
     return state.userUpdatingOrder;
-  }
+  },
 }

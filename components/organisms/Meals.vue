@@ -32,25 +32,19 @@
           </div>
         </div>
 
-        <div class="summery col-md-4">
-          <div class="card">
-            <div class="summery__title">Order</div>
-            <hr />
-            <div class="summery__list">
-              <div class="summery__list__title">Food:</div>
-              <div class="summery__list__item">
-                1 x {{ currentOrder.meal.strMeal }}
-              </div>
-            </div>
-
-            <hr />
-          </div>
-          <div class="button-wrapper">
-            <Button :text="'next'" :link="'/order/drinks'" />
+        <div class="col-md-4 sticky">
+          <Summery
+            :currentOrder="currentOrder"
+            :isUserUpdating="isUserUpdating"
+          />
+          <div class="button-wrapper button-wrapper--align-right">
+            <Button
+              :text="'next'"
+              @buttonclick="$store.commit('incrementStep')"
+            />
           </div>
         </div>
       </div>
-      <!-- <pre>{{ JSON.stringify(this.currentOrder, null, "\t") }}</pre> -->
     </div>
   </div>
 </template>

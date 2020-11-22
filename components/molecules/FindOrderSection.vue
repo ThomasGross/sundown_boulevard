@@ -57,7 +57,7 @@ export default {
 
         this.$store.commit("localStorageToState", this.email);
         this.$router.push({
-          path: "/order/meals",
+          path: "/order",
         });
       });
     },
