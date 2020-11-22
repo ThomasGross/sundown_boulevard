@@ -18,9 +18,6 @@ export default {
     HeroSection,
     FindOrderSection,
   },
-  mounted() {
-    // this.$store.commit("initialiseStore");
-  },
 };
 </script>
 

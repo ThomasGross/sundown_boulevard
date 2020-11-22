@@ -208,35 +208,6 @@ export default {
         }
       }
     }
-
-    .summery {
-      position: sticky;
-      height: 100%;
-      top: 30px;
-
-      .button-wrapper {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 30px;
-        margin-left: auto;
-      }
-
-      &__title {
-        font-size: 32px;
-      }
-
-      &__list {
-        margin-top: 15px;
-
-        &__title {
-          font-weight: 400;
-        }
-
-        &__item {
-          margin-top: 15px;
-        }
-      }
-    }
   }
 }
 </style>

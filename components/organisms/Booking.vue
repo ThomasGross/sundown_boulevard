@@ -12,7 +12,7 @@
                 v-slot="{ errors }"
                 :rules="{ required: true }"
               >
-                <label for="">Choose a date</label>
+                <label>Choose a date</label>
                 <client-only
                   ><date-picker
                     placeholder="DD/MM/YYYY"
@@ -30,7 +30,7 @@
                 :rules="{ required: true, regex: '[0-9][0-9]:[0-9][0-9]' }"
                 class="input-group col-6"
               >
-                <label for="">Choose the time</label>
+                <label>Choose the time</label>
                 <client-only>
                   <div>
                     <vue-timepicker
@@ -54,7 +54,7 @@
                 name="Email"
                 v-slot="{ errors }"
               >
-                <label for="">Email</label>
+                <label>Email</label>
                 <input
                   :class="isUserUpdatingOrder ? 'Order' : 'Update order'"
                   placeholder="example@mail.com"
@@ -66,7 +66,7 @@
             </div>
             <div class="form-row row">
               <div class="col-6">
-                <label for="">Amount of people</label>
+                <label>Amount of people</label>
                 <div class="cta-section">
                   <button class="button-remove" v-on:click="removePerson()">
                     -
@@ -78,7 +78,6 @@
             </div>
           </ValidationObserver>
         </div>
-
         <div class="col-md-4 sticky">
           <Summery :currentOrder="currentOrder" :step="step" />
           <div class="button-wrapper button-wrapper--align-right">
@@ -128,19 +127,6 @@ export default {
   created() {
     this.booking_info = cloneDeep(this.currentOrder.booking_info);
   },
-  async fetch() {
-    const drinksToReturn = [];
-
-    const drinks = await fetch("https://api.punkapi.com/v2/beers").then((res) =>
-      res.json()
-    );
-
-    drinks.forEach((drink) => {
-      drinksToReturn.push({ ...drink, amount: 0 });
-    });
-
-    this.drinks = drinksToReturn;
-  },
   methods: {
     validateForm() {
       this.$refs.observer.validate().then((success) => {
@@ -153,17 +139,6 @@ export default {
 
         this.$store.commit("incrementStep");
       });
-    },
-    getAmount(id) {
-      const drink = this.currentOrder.drinks.find((x) => x.id === id);
-
-      if (drink !== undefined) {
-        console.log(drink.amount);
-
-        return drink.amount;
-      } else {
-        return 0;
-      }
     },
     addPerson() {
       if (this.booking_info.people !== 10) {

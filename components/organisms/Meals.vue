@@ -25,13 +25,11 @@
               </div>
             </div>
           </div>
-
           <div class="button-wrapper">
             <div>NOT YOUR TASE?</div>
             <Button :text="'Try another'" @buttonclick="refreshMeal" />
           </div>
         </div>
-
         <div class="col-md-4 sticky">
           <Summery
             :currentOrder="currentOrder"
@@ -85,17 +83,17 @@ export default {
       this.fetchMeal();
     },
     async fetchMeal() {
-      const meals = await this.$axios.$get(
+      const res = await this.$axios.$get(
         "https://www.themealdb.com/api/json/v1/1/random.php"
       );
 
-      const mealsObj = JSON.parse(JSON.stringify(meals));
+      const meal = res.meals[0];
 
-      let tags = this.generateTags(mealsObj.meals[0].strArea);
-      tags = tags.concat(this.generateTags(mealsObj.meals[0].strCategory));
-      tags = tags.concat(this.generateTags(mealsObj.meals[0].strTags));
+      let tags = this.generateTags(meal.strArea);
+      tags = tags.concat(this.generateTags(meal.strCategory));
+      tags = tags.concat(this.generateTags(meal.strTags));
 
-      this.$store.commit("setMeal", { ...mealsObj.meals[0], tags });
+      this.$store.commit("setMeal", { ...meal, tags });
     },
     generateTags(tagsString) {
       if (tagsString) {
@@ -163,31 +161,6 @@ export default {
           font-size: 23px;
           color: $color-black;
           font-family: "HelveticaNeue-CondensedBlack";
-        }
-      }
-    }
-
-    .summery {
-      .button-wrapper {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 30px;
-        margin-left: auto;
-      }
-
-      &__title {
-        font-size: 32px;
-      }
-
-      &__list {
-        margin-top: 15px;
-
-        &__title {
-          font-weight: 400;
-        }
-
-        &__item {
-          margin-top: 15px;
         }
       }
     }
