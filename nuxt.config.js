@@ -33,6 +33,7 @@ export default {
   plugins: [
     { src: '~/plugins/vue-datepicker', ssr: false },
     { src: "~/plugins/vee-validate.js", ssr: false },
+    { src: "~/plugins/vue-awesome-swiper.js", ssr: false },
   ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)

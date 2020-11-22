@@ -4,6 +4,9 @@
       <HeroSection />
     </div>
     <div class="section">
+      <SliderSection />
+    </div>
+    <div class="section">
       <FindOrderSection />
     </div>
   </div>
@@ -12,11 +15,13 @@
 <script>
 import HeroSection from "~/components/molecules/HeroSection";
 import FindOrderSection from "~/components/molecules/FindOrderSection";
+import SliderSection from "~/components/molecules/SliderSection";
 
 export default {
   components: {
     HeroSection,
     FindOrderSection,
+    SliderSection,
   },
 };
 </script>
