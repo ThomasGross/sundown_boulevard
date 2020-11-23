@@ -24,8 +24,6 @@
         <div class="button-section">
           <Button :text="'Find'" @buttonclick="validateFields" />
         </div>
-
-        {{ currentOrder }}
       </div>
     </div>
   </div>
