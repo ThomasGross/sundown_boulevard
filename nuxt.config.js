@@ -53,10 +53,7 @@ export default {
   generate: {
     routes: [
       "/",
-      "/booking",
-      "/drinks",
-      "/meals",
-      "/receipt",
+      "/order",
     ]
   },
 

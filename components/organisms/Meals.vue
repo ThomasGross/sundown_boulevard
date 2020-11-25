@@ -87,7 +87,7 @@ export default {
         "https://www.themealdb.com/api/json/v1/1/random.php"
       );
 
-      const meal = res.meals[0];
+      const meal = res?.meals?.[0];
 
       let tags = this.generateTags(meal.strArea);
       tags = tags.concat(this.generateTags(meal.strCategory));
